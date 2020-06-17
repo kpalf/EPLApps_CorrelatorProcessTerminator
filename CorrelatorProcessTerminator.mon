@@ -1,0 +1,46 @@
+using com.apama.correlator.Component;
+using com.apama.cumulocity.GenericRequest;
+using com.softwareag.connectivity.httpclient.Response;
+
+
+monitor CorrelatorProcessTerminator {
+	constant integer RESTART_LOOP_AVOIDANCE_SECONDS := 120; // 2 minutes
+	constant integer COUNTDOWN_SECONDS := 10;
+
+	integer countdown := COUNTDOWN_SECONDS;
+
+	action onload() {
+		dictionary<string, string> correlatorInfo := Component.getInfo("");
+		log "Component.getInfo(): "+correlatorInfo.toString();
+
+		if correlatorInfo["uptime"].toInteger() < RESTART_LOOP_AVOIDANCE_SECONDS * 1000 { // uptime is apparently in MILLI-SECONDS!
+			log "Too young for suicide. The apama-ctrl microservice (correlator process) must have been running longer than "+RESTART_LOOP_AVOIDANCE_SECONDS.toString()+" seconds to avoid unintended restart loop." at INFO;
+			log "Correlator has only been running "+(correlatorInfo["uptime"].toInteger().toFloat()/1000.0).toString() +" seconds." at INFO;
+			log "Exiting this monitor immediately without further actions. This EPLApp would need to be re-activated to try again later." at INFO;
+			die;
+		}
+		else {
+			log "Beginning countdown before initiating apama-ctrl microservice restart." at WARN;
+			log "The only way to prevent termination is to deactivate this EPLApp before the countdown completes." at WARN;
+			
+			log "Termination in "+ COUNTDOWN_SECONDS.toString() +" seconds" at WARN;
+
+			on all wait(1.0) {
+				countdown := countdown -1;
+
+				if (0 = countdown) {
+					log "EPL monitor CorrelatorProcessTerminator is initiating immediate apama-ctrl microservice restart." at ERROR;
+					
+					// Suspect naughty ID value, but don't really care - fire and forget
+					send GenericRequest(-1, "PUT", "/service/cep/restart", new dictionary<string,string>, false, any(), new dictionary<string,string>) to GenericRequest.SEND_CHANNEL;
+					die;
+				}
+
+				log "Countdown seconds remaining: "+countdown.toString() at WARN;
+			} // repeated wait listener
+		}
+
+	} // onload()
+
+
+} // monitor CorrelatorProcessTerminator
