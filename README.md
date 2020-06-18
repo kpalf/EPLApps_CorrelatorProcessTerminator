@@ -1,4 +1,4 @@
-# A sample Apama EPL App called "CorrelatorProcessTerminator" for use in Cumulocity
+# A sample Apama EPL App called "CorrelatorProcessTerminator" for use in Cumulocity IoT
 
 Sometimes it is useful to be able to "activate" a simple existing EPL App that is able to quickly cause the apama-ctrl microservice to restart.  No need for support tickets, or Ops assistance, or higher-level permissions.
 

@@ -1,8 +1,35 @@
+/**
+ * Title:        CorrelatorProcessTerminator.mon
+ * Description:  EPL utility to restart the apama-ctrl microservice of Apama Streaming Analytics within Cumulocity IoT.
+ * Source:       https://github.com/kpalf/EPLApps_CorrelatorProcessTerminator 
+ * 
+ * Copyright (c) 2020 Kevin Palfreyman
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this
+ * file except in compliance with the License. You may obtain a copy of the License at
+ * http:/www.apache.org/licenses/LICENSE-2.0
+ * Unless required by applicable law or agreed to in writing, software distributed under the
+ * License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied.
+ * See the License for the specific language governing permissions and limitations under the License.
+ */
+ 
 using com.apama.correlator.Component;
 using com.apama.cumulocity.GenericRequest;
 using com.softwareag.connectivity.httpclient.Response;
 
-
+/**
+ * EPL utility to restart the apama-ctrl microservice of Apama Streaming Analytics within Cumulocity IoT.
+ * Create a new "EPL App", and add this file as the entire EPL source of that App.  Save it. 
+ * When the App state is next set to "active" it will be injected into the Apama correlator and will 
+ * immediately begin a countdown (default 10seconds unless the COUNTDOWN_SECONDS value below is changed).
+ * When the countdown timer reaches zero, it will request an immediate forced restart of the microservice.
+ * During the countdown period, before it reaches zero, setting the App to "inactive" will cancel it.
+ *
+ * This will not cause a "restart loop", because if the correlator is detected to have been running for less 
+ * than RESTART_LOOP_AVOIDANCE_SECONDS (default 120) the monitor will quit before starting the countdown. 
+ * This handles the situation where after microservice restart, all previously "active" Apps are recovered.
+ */
 monitor CorrelatorProcessTerminator {
 	constant integer RESTART_LOOP_AVOIDANCE_SECONDS := 120; // 2 minutes
 	constant integer COUNTDOWN_SECONDS := 10;
