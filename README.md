@@ -6,6 +6,6 @@ Once deployed as a new EPL App, you just flick the activation switch and 10secon
 Hope it is useful in your toolbox.
 
 ----
-LICENSE
+LICENSE - Apache License v2.0
 
 Anyone is free to use and modify these EPL files. They are provided as-is and without warranty or support. They do not constitute part of the Software AG product suite, nor any part of the formal Apama Community assets provided by Software AG. Users are free to use, fork and modify them.
